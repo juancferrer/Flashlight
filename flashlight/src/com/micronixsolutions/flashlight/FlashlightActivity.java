@@ -3,6 +3,8 @@ package com.micronixsolutions.flashlight;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -26,7 +28,11 @@ public class FlashlightActivity extends Activity implements OnCheckedChangeListe
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
         toggleButton.setOnCheckedChangeListener(this);
         
-        flashlight = new Flashlight(); //Sweet new flashlight object
+        flashlight = new Flashlight(this); //Sweet new flashlight object. Make sure to pass this activity as the context
+        
+        //The flashlight gives us a surfaceview/preview for the camera.
+        //If we don't add this to the activity, then the flashlight won't work on samsung devices
+        addContentView(flashlight.getSurfaceView(), new ViewGroup.LayoutParams(1,1)); //Make it 1px/1px
         
         //The toggle button could be 'on' if we rotated device, and activity was destroyed/created
         if(toggleButton.isChecked())
