@@ -19,9 +19,9 @@ public class Flashlight implements SurfaceHolder.Callback {
     
     private SurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
-    
+    private Thread openCameraThread = null; //Reuse this thread on init()
     //Open the camera in a thread, and make sure that it supports 'torch' mode
-    Thread openCameraThread = new Thread(new Runnable(){
+    private Runnable openCameraRunnable = new Runnable(){
         @Override
         public void run() {
             // TODO Auto-generated method stub
@@ -47,7 +47,7 @@ public class Flashlight implements SurfaceHolder.Callback {
             if(on)
                 setTorch(true); //turn the flashlight on
         }
-    });
+    };
     
     /* CONSTRUCTOR
      * 
@@ -74,7 +74,7 @@ public class Flashlight implements SurfaceHolder.Callback {
         preview = new SurfaceView(context); //Pass the activity context
         previewHolder = preview.getHolder();
         previewHolder.addCallback(this);
-        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        //previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
     
     /** Call this to manually open the camera...if you previously called 'stop'
@@ -82,8 +82,11 @@ public class Flashlight implements SurfaceHolder.Callback {
      */
     public void init(){
         //Begin opening the camera
-        if(cam == null)
+        if(cam == null){
+            openCameraThread = new Thread(openCameraRunnable);
             openCameraThread.start();
+        }
+            
     }
     
     /** Call this stop the flashlight, and release the camera
@@ -156,7 +159,7 @@ public class Flashlight implements SurfaceHolder.Callback {
     public void surfaceDestroyed(SurfaceHolder holder) {
         // TODO Auto-generated method stub
         Log.d(TAG, "surfaceDestroyed");
-        stop();
+        //stop();
 
         
     }

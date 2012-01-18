@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -15,6 +16,7 @@ import com.micronixsolutions.flashlight.Flashlight;
 public class FlashlightActivity extends Activity implements OnCheckedChangeListener {
     public static final String TAG = "FlashlightApp";
     private ToggleButton toggleButton = null;
+    private CheckBox checkBox = null;
     private Flashlight flashlight = null;
     
     /** Called when the activity is first created. */
@@ -28,6 +30,9 @@ public class FlashlightActivity extends Activity implements OnCheckedChangeListe
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
         toggleButton.setOnCheckedChangeListener(this);
         
+        //Save a reference to the checkbox
+        checkBox = (CheckBox) findViewById(R.id.checkBox1);
+        
         flashlight = new Flashlight(this); //Sweet new flashlight object. Make sure to pass this activity as the context
         
         //The flashlight gives us a surfaceview/preview for the camera.
@@ -39,17 +44,40 @@ public class FlashlightActivity extends Activity implements OnCheckedChangeListe
             flashlight.setTorch(true);
     }
     
+    @Override
     public void onDestroy(){
+        // TODO Auto-generated method stub
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-        //The flashlight holds and instance of a camera...make sure to stop it
+        //Always stop the flashlight when the app quits
         flashlight.stop();
     }
     
+    @Override
+    protected void onStop() {
+        // TODO Auto-generated method stub
+        super.onStop();
+        Log.d(TAG, "onStop");
+        //Only stop the flashlight if the checkbox isn't checked.
+        if(!checkBox.isChecked()){
+            toggleButton.setChecked(false); //onCheckedChange will change the flashlight state
+            flashlight.stop();
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        // TODO Auto-generated method stub
+        super.onRestart();
+        Log.d(TAG, "onRestart");
+        flashlight.init(); //Re-init the camera
+    }
+
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         // TODO Auto-generated method stub
         Log.d(TAG, "onCheckedChanged: " + isChecked);
         flashlight.setTorch(isChecked);
+
     }
 }
