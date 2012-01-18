@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Linterna</string>
+    <string name="keep_open">Mantener el estado al salir</string>
+
+</resources>
